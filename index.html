@@ -1,0 +1,1271 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ROI Headroom Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f4ee;
+      --bg-soft: #efe9df;
+      --ink: #1f1f1b;
+      --ink-soft: #4b4b40;
+      --accent: #e07a5f;
+      --accent-2: #3d7ea6;
+      --accent-3: #f2c14e;
+      --card: #ffffff;
+      --card-alt: #f3efe5;
+      --border: rgba(31, 31, 27, 0.12);
+      --shadow: 0 18px 38px rgba(20, 18, 10, 0.12);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(242, 193, 78, 0.22), transparent 55%),
+        radial-gradient(circle at 85% 15%, rgba(61, 126, 166, 0.18), transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(224, 122, 95, 0.18), transparent 55%),
+        linear-gradient(135deg, var(--bg) 0%, var(--bg-soft) 55%, #f8f1e6 100%);
+      min-height: 100vh;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      inset: -20% auto auto -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(61, 126, 166, 0.18), transparent 70%);
+      filter: blur(30px);
+    }
+
+    body::after {
+      inset: auto -10% -25% auto;
+      background: radial-gradient(circle, rgba(224, 122, 95, 0.2), transparent 70%);
+    }
+
+    body:not(.loaded) [data-animate] {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+
+    body.loaded [data-animate] {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .app {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .hero-text {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 28px 30px 26px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-text::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(242, 193, 78, 0.12), rgba(61, 126, 166, 0.12), transparent 70%);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.7rem;
+      color: var(--accent-2);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-family: "Fraunces", serif;
+      font-size: clamp(2.1rem, 3.5vw, 3.1rem);
+      margin: 0 0 14px;
+    }
+
+    .lede {
+      font-size: 1.05rem;
+      color: var(--ink-soft);
+      margin: 0 0 18px;
+      line-height: 1.6;
+      max-width: 54ch;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tag {
+      padding: 6px 12px;
+      background: rgba(61, 126, 166, 0.12);
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--accent-2);
+    }
+
+    .hero-metrics {
+      display: grid;
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card.warning {
+      border-color: rgba(224, 122, 95, 0.5);
+      background: rgba(224, 122, 95, 0.08);
+    }
+
+    .stat-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.68rem;
+      color: var(--accent-2);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .stat-meta {
+      margin-top: 6px;
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+    }
+    .grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 22px 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 1.35rem;
+      font-family: "Fraunces", serif;
+    }
+
+    .panel .subhead {
+      font-size: 0.9rem;
+      color: var(--ink-soft);
+      margin-bottom: 16px;
+    }
+
+    .control-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .control {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    input,
+    select {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    input:focus,
+    select:focus {
+      outline: 2px solid rgba(61, 126, 166, 0.35);
+      border-color: rgba(61, 126, 166, 0.5);
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 120px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .inline-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+    }
+
+    .range-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      background: rgba(242, 193, 78, 0.2);
+      color: #7a4a00;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(61, 126, 166, 0.35), rgba(224, 122, 95, 0.35));
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      border: 2px solid #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      border: 2px solid #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+    }
+
+    .toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .matrix-wrap {
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 620px;
+    }
+
+    .matrix-table th,
+    .matrix-table td {
+      padding: 10px 12px;
+      text-align: center;
+      border: 1px solid rgba(31, 31, 27, 0.08);
+      font-size: 0.85rem;
+    }
+
+    .matrix-table th {
+      background: rgba(61, 126, 166, 0.1);
+      font-weight: 700;
+    }
+
+    .matrix-table td {
+      border-radius: 10px;
+    }
+
+    .matrix-cell {
+      display: grid;
+      gap: 2px;
+    }
+
+    .matrix-cell strong {
+      font-size: 0.92rem;
+    }
+
+    .matrix-cell span {
+      font-size: 0.7rem;
+      color: rgba(31, 31, 27, 0.7);
+    }
+
+    .matrix-selected {
+      outline: 2px solid rgba(61, 126, 166, 0.6);
+    }
+
+    .chart-wrap {
+      height: 320px;
+    }
+
+    .metrics-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .metrics-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--card-alt);
+      border-radius: 12px;
+      font-size: 0.9rem;
+    }
+
+    .metrics-list strong {
+      font-weight: 700;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .grid.two {
+        grid-template-columns: 1fr;
+      }
+
+      .input-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="hero" data-animate>
+      <div class="hero-text">
+        <div class="eyebrow">ROI Headroom Studio</div>
+        <h1>Design your runway for monthly income</h1>
+        <p class="lede">
+          Set a monthly withdrawal, headroom years, and target CAGR. Build the required start, then simulate how
+          contributions and compounding move you across time.
+        </p>
+        <div class="hero-tags">
+          <span class="tag">Range builder</span>
+          <span class="tag">Scenario matrix</span>
+          <span class="tag">Live charts</span>
+        </div>
+      </div>
+      <div class="hero-metrics">
+        <div class="stat-card">
+          <div class="stat-label">Required start</div>
+          <div class="stat-value">{{ formatCurrency(requiredStart) }}</div>
+          <div class="stat-meta">for {{ formatCurrency(selected.target) }} / mo, {{ selected.years }}y, {{ selected.cagr }}% CAGR</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">CAGR needed for your start</div>
+          <div class="stat-value">{{ requiredCagrText }}</div>
+          <div class="stat-meta">based on {{ formatCurrency(startCapital) }} starting capital</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Auto time to required start</div>
+          <div class="stat-value">{{ autoTimeText }}</div>
+          <div class="stat-meta">with {{ formatCurrency(contributionMonthly) }} / mo contributions</div>
+        </div>
+        <div class="stat-card" :class="{ warning: simulation.endBalance < 0 }">
+          <div class="stat-label">End balance</div>
+          <div class="stat-value">{{ formatCurrency(simulation.endBalance) }}</div>
+          <div class="stat-meta">{{ runwayText }}</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="grid two">
+      <div class="panel" data-animate>
+        <h2>Range builder</h2>
+        <p class="subhead">Edit min, max, and step values to reshape the scenario grid.</p>
+        <div class="control-grid">
+          <div class="control">
+            <label>Monthly target range (EUR)</label>
+            <div class="inline-row">
+              <input type="number" v-model.number="ranges.targetMin">
+              <input type="number" v-model.number="ranges.targetMax">
+              <input type="number" v-model.number="ranges.targetStep">
+            </div>
+            <div class="range-preview">
+              <span v-for="value in targets" :key="'t' + value" class="chip">{{ formatShort(value) }}</span>
+            </div>
+            <div class="hint">Min, max, step</div>
+          </div>
+
+          <div class="control">
+            <label>Headroom years range</label>
+            <div class="inline-row">
+              <input type="number" v-model.number="ranges.yearsMin">
+              <input type="number" v-model.number="ranges.yearsMax">
+              <input type="number" v-model.number="ranges.yearsStep">
+            </div>
+            <div class="range-preview">
+              <span v-for="value in yearsList" :key="'y' + value" class="chip">{{ value }}y</span>
+            </div>
+            <div class="hint">Min, max, step</div>
+          </div>
+
+          <div class="control">
+            <label>CAGR range (%)</label>
+            <div class="inline-row">
+              <input type="number" v-model.number="ranges.cagrMin">
+              <input type="number" v-model.number="ranges.cagrMax">
+              <input type="number" v-model.number="ranges.cagrStep">
+            </div>
+            <div class="range-preview">
+              <span v-for="value in cagrList" :key="'c' + value" class="chip">{{ value }}%</span>
+            </div>
+            <div class="hint">Min, max, step</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" data-animate>
+        <h2>Scenario inputs</h2>
+        <p class="subhead">Pick the scenario you want to explore right now.</p>
+        <div class="control-grid">
+          <div class="control">
+            <label>Monthly withdrawal target (EUR)</label>
+            <div class="input-row">
+              <input type="range" :min="ranges.targetMin" :max="ranges.targetMax" :step="ranges.targetStep" v-model.number="selected.target">
+              <input type="number" v-model.number="selected.target">
+            </div>
+          </div>
+
+          <div class="control">
+            <label>Headroom years</label>
+            <div class="input-row">
+              <input type="range" :min="ranges.yearsMin" :max="ranges.yearsMax" :step="ranges.yearsStep" v-model.number="selected.years">
+              <input type="number" v-model.number="selected.years">
+            </div>
+          </div>
+
+          <div class="control">
+            <label>CAGR target (%)</label>
+            <div class="input-row">
+              <input type="range" :min="ranges.cagrMin" :max="ranges.cagrMax" :step="ranges.cagrStep" v-model.number="selected.cagr">
+              <input type="number" v-model.number="selected.cagr">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="grid two">
+      <div class="panel" data-animate>
+        <h2>Contribution plan</h2>
+        <p class="subhead">Start at any capital, then add recurring contributions to reach the required start faster.</p>
+        <div class="control-grid">
+          <div class="control">
+            <label>Starting capital (EUR)</label>
+            <input type="number" v-model.number="startCapital">
+          </div>
+
+          <div class="control">
+            <label>Contribution amount (EUR)</label>
+            <div class="input-row">
+              <input type="range" min="0" max="5000" step="50" v-model.number="contributionAmount">
+              <input type="number" v-model.number="contributionAmount">
+            </div>
+          </div>
+
+          <div class="control">
+            <label>Contribution frequency</label>
+            <select v-model="contributionFrequency">
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly (converted to monthly)</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label>Contribution mode</label>
+            <div class="toggle-row">
+              <label class="toggle">
+                <input type="radio" value="auto" v-model="contributionMode">
+                Auto until required start
+              </label>
+              <label class="toggle">
+                <input type="radio" value="fixed" v-model="contributionMode">
+                Fixed years
+              </label>
+            </div>
+          </div>
+
+          <div class="control" v-if="contributionMode === 'fixed'">
+            <label>Contribution years</label>
+            <div class="input-row">
+              <input type="range" min="0" max="40" step="1" v-model.number="contributionYears">
+              <input type="number" v-model.number="contributionYears">
+            </div>
+          </div>
+
+          <div class="control">
+            <label>Monte Carlo band</label>
+            <div class="toggle-row">
+              <label class="toggle">
+                <input type="checkbox" v-model="monteCarlo.enabled">
+                Show volatility band
+              </label>
+            </div>
+          </div>
+
+          <div class="control" v-if="monteCarlo.enabled">
+            <label>Volatility (annual %)</label>
+            <div class="input-row">
+              <input type="range" min="0" max="40" step="1" v-model.number="monteCarlo.volatility">
+              <input type="number" v-model.number="monteCarlo.volatility">
+            </div>
+            <div class="hint">Higher volatility widens the probability band.</div>
+          </div>
+
+          <div class="control" v-if="monteCarlo.enabled">
+            <label>Simulation runs</label>
+            <div class="input-row">
+              <input type="range" min="50" max="500" step="10" v-model.number="monteCarlo.runs">
+              <input type="number" v-model.number="monteCarlo.runs">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" data-animate>
+        <h2>Scenario output</h2>
+        <p class="subhead">Quick numbers for the current scenario.</p>
+        <ul class="metrics-list">
+          <li>
+            <span>Total withdrawals over horizon</span>
+            <strong>{{ formatCurrency(totalWithdrawals) }}</strong>
+          </li>
+          <li>
+            <span>Required start at {{ selected.cagr }}% CAGR</span>
+            <strong>{{ formatCurrency(requiredStart) }}</strong>
+          </li>
+          <li>
+            <span>Required CAGR for your start</span>
+            <strong>{{ requiredCagrText }}</strong>
+          </li>
+          <li>
+            <span>Auto time to required start</span>
+            <strong>{{ autoTimeText }}</strong>
+          </li>
+          <li>
+            <span>Deterministic runway</span>
+            <strong>{{ runwayText }}</strong>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section class="panel" data-animate>
+      <h2>Scenario matrix</h2>
+      <p class="subhead">Required starting capital by monthly target and headroom years (selected CAGR: {{ selected.cagr }}%).</p>
+      <div class="matrix-wrap">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Monthly target</th>
+              <th v-for="year in yearsList" :key="'col-' + year">{{ year }}y</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="target in targets" :key="'row-' + target">
+              <th>{{ formatShort(target) }} / mo</th>
+              <td v-for="year in yearsList"
+                  :key="'cell-' + target + '-' + year"
+                  :style="cellStyle(target, year)"
+                  :class="{ 'matrix-selected': target === selected.target && year === selected.years }">
+                <div class="matrix-cell">
+                  <strong>{{ formatShort(requiredCapital(target, year, selected.cagr)) }}</strong>
+                  <span>start</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="grid two">
+      <div class="panel" data-animate>
+        <h2>Required start vs CAGR</h2>
+        <p class="subhead">Lines show how much starting capital you need as CAGR changes (for {{ selected.years }}y).</p>
+        <div class="chart-wrap">
+          <canvas ref="requiredChart"></canvas>
+        </div>
+      </div>
+
+      <div class="panel" data-animate>
+        <h2>Balance path</h2>
+        <p class="subhead">Accumulation then withdrawals over time.</p>
+        <div class="chart-wrap">
+          <canvas ref="balanceChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note" data-animate>
+      This is a simplified model for exploration only. Real markets include volatility, taxes, fees, and sequence risk.
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.4.31/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    const { createApp, markRaw } = Vue;
+
+    Chart.defaults.font.family = '"Space Grotesk", "Segoe UI", sans-serif';
+    Chart.defaults.color = '#3f3f35';
+
+    createApp({
+      data() {
+        return {
+          ranges: {
+            targetMin: 1000,
+            targetMax: 3000,
+            targetStep: 500,
+            yearsMin: 10,
+            yearsMax: 20,
+            yearsStep: 5,
+            cagrMin: 5,
+            cagrMax: 20,
+            cagrStep: 5
+          },
+          selected: {
+            target: 2000,
+            years: 15,
+            cagr: 10
+          },
+          startCapital: 0,
+          contributionAmount: 500,
+          contributionFrequency: 'monthly',
+          contributionMode: 'auto',
+          contributionYears: 5,
+          monteCarlo: {
+            enabled: false,
+            volatility: 12,
+            runs: 200,
+            seed: 42
+          },
+          simulation: {
+            labels: [],
+            accLine: [],
+            withdrawLine: [],
+            p10: [],
+            p50: [],
+            p90: [],
+            monthsAccum: 0,
+            monthsTotal: 0,
+            endBalance: 0,
+            ruinMonth: null,
+            autoStatus: 'ok'
+          },
+          charts: {
+            required: null,
+            balance: null
+          }
+        };
+      },
+      computed: {
+        targets() {
+          return this.makeRange(this.ranges.targetMin, this.ranges.targetMax, this.ranges.targetStep);
+        },
+        yearsList() {
+          return this.makeRange(this.ranges.yearsMin, this.ranges.yearsMax, this.ranges.yearsStep);
+        },
+        cagrList() {
+          return this.makeRange(this.ranges.cagrMin, this.ranges.cagrMax, this.ranges.cagrStep);
+        },
+        contributionMonthly() {
+          if (this.contributionFrequency === 'yearly') {
+            return this.contributionAmount / 12;
+          }
+          return this.contributionAmount;
+        },
+        requiredStart() {
+          return this.requiredCapital(this.selected.target, this.selected.years, this.selected.cagr);
+        },
+        totalWithdrawals() {
+          return this.selected.target * this.selected.years * 12;
+        },
+        requiredCagrResult() {
+          return this.solveCagr(this.startCapital, this.selected.target, this.selected.years);
+        },
+        requiredCagrText() {
+          if (this.requiredCagrResult.status === 'no-capital') {
+            return 'n/a';
+          }
+          if (this.requiredCagrResult.status === 'overfunded') {
+            return '0% (overfunded)';
+          }
+          if (this.requiredCagrResult.status === 'above-max') {
+            return '> ' + this.formatPct(this.requiredCagrResult.value) + ' (cap)';
+          }
+          return this.formatPct(this.requiredCagrResult.value);
+        },
+        autoTimeText() {
+          if (this.contributionMode === 'fixed') {
+            return this.contributionYears + 'y (fixed)';
+          }
+          if (this.simulation.autoStatus === 'unreachable') {
+            return '> 50y (not reached)';
+          }
+          return this.formatYears(this.simulation.monthsAccum);
+        },
+        runwayText() {
+          if (this.simulation.ruinMonth === null) {
+            return 'survives full horizon';
+          }
+          return 'runs out in ' + this.formatYears(this.simulation.ruinMonth);
+        },
+        matrixBounds() {
+          const values = [];
+          for (const target of this.targets) {
+            for (const year of this.yearsList) {
+              values.push(this.requiredCapital(target, year, this.selected.cagr));
+            }
+          }
+          if (!values.length) {
+            return { min: 0, max: 1 };
+          }
+          return {
+            min: Math.min(...values),
+            max: Math.max(...values)
+          };
+        }
+      },
+      methods: {
+        makeRange(min, max, step) {
+          const cleanStep = step > 0 ? step : 1;
+          const start = Number.isFinite(min) ? min : 0;
+          const end = Number.isFinite(max) ? max : start;
+          const list = [];
+          const count = Math.floor((end - start) / cleanStep) + 1;
+          for (let i = 0; i < count; i++) {
+            const value = start + cleanStep * i;
+            list.push(Number(value.toFixed(6)));
+          }
+          return list;
+        },
+        sanitizeInputs() {
+          const r = this.ranges;
+          const sanitize = (value, fallback) => (Number.isFinite(value) ? value : fallback);
+          r.targetMin = sanitize(r.targetMin, 0);
+          r.targetMax = sanitize(r.targetMax, r.targetMin);
+          r.targetStep = Math.max(1, Math.abs(sanitize(r.targetStep, 1)));
+          if (r.targetMin > r.targetMax) {
+            [r.targetMin, r.targetMax] = [r.targetMax, r.targetMin];
+          }
+
+          r.yearsMin = sanitize(r.yearsMin, 1);
+          r.yearsMax = sanitize(r.yearsMax, r.yearsMin);
+          r.yearsStep = Math.max(1, Math.abs(sanitize(r.yearsStep, 1)));
+          if (r.yearsMin > r.yearsMax) {
+            [r.yearsMin, r.yearsMax] = [r.yearsMax, r.yearsMin];
+          }
+
+          r.cagrMin = sanitize(r.cagrMin, 0);
+          r.cagrMax = sanitize(r.cagrMax, r.cagrMin);
+          r.cagrStep = Math.max(0.5, Math.abs(sanitize(r.cagrStep, 1)));
+          if (r.cagrMin > r.cagrMax) {
+            [r.cagrMin, r.cagrMax] = [r.cagrMax, r.cagrMin];
+          }
+
+          this.selected.target = this.snap(this.selected.target, r.targetMin, r.targetMax, r.targetStep);
+          this.selected.years = this.snap(this.selected.years, r.yearsMin, r.yearsMax, r.yearsStep);
+          this.selected.cagr = this.snap(this.selected.cagr, r.cagrMin, r.cagrMax, r.cagrStep);
+
+          this.startCapital = Math.max(0, sanitize(this.startCapital, 0));
+          this.contributionAmount = Math.max(0, sanitize(this.contributionAmount, 0));
+          this.contributionYears = Math.max(0, sanitize(this.contributionYears, 0));
+
+          this.monteCarlo.volatility = Math.max(0, sanitize(this.monteCarlo.volatility, 0));
+          this.monteCarlo.runs = Math.min(500, Math.max(50, Math.round(sanitize(this.monteCarlo.runs, 200))));
+        },
+        snap(value, min, max, step) {
+          const clamped = Math.min(max, Math.max(min, value));
+          if (!step) {
+            return clamped;
+          }
+          const snapped = min + Math.round((clamped - min) / step) * step;
+          return Number(snapped.toFixed(6));
+        },
+        annualToMonthlyRate(annualRate) {
+          const safe = Math.max(-0.95, annualRate);
+          return Math.pow(1 + safe, 1 / 12) - 1;
+        },
+        requiredCapital(monthlyWithdrawal, years, cagrPercent) {
+          const months = Math.max(0, Math.round(years * 12));
+          if (months === 0 || monthlyWithdrawal <= 0) {
+            return 0;
+          }
+          const monthlyRate = this.annualToMonthlyRate(cagrPercent / 100);
+          if (Math.abs(monthlyRate) < 1e-9) {
+            return monthlyWithdrawal * months;
+          }
+          return monthlyWithdrawal * (1 - Math.pow(1 + monthlyRate, -months)) / monthlyRate;
+        },
+        solveCagr(startCapital, monthlyWithdrawal, years) {
+          if (startCapital <= 0 || monthlyWithdrawal <= 0 || years <= 0) {
+            return { status: 'no-capital', value: 0 };
+          }
+          const pvAtZero = this.requiredCapital(monthlyWithdrawal, years, 0);
+          if (startCapital >= pvAtZero) {
+            return { status: 'overfunded', value: 0 };
+          }
+          const maxAnnual = 0.35;
+          const pvAtMax = this.requiredCapital(monthlyWithdrawal, years, maxAnnual * 100);
+          if (startCapital < pvAtMax) {
+            return { status: 'above-max', value: maxAnnual * 100 };
+          }
+          let low = 0;
+          let high = maxAnnual;
+          for (let i = 0; i < 40; i++) {
+            const mid = (low + high) / 2;
+            const pv = this.requiredCapital(monthlyWithdrawal, years, mid * 100);
+            if (pv > startCapital) {
+              low = mid;
+            } else {
+              high = mid;
+            }
+          }
+          return { status: 'ok', value: ((low + high) / 2) * 100 };
+        },
+        monthsToReach(startCapital, contributionMonthly, cagrPercent, targetCapital) {
+          if (targetCapital <= startCapital) {
+            return 0;
+          }
+          const monthlyRate = this.annualToMonthlyRate(cagrPercent / 100);
+          if (Math.abs(monthlyRate) < 1e-9) {
+            if (contributionMonthly <= 0) {
+              return Infinity;
+            }
+            return (targetCapital - startCapital) / contributionMonthly;
+          }
+          if (contributionMonthly <= 0 && startCapital <= 0) {
+            return Infinity;
+          }
+          const numerator = targetCapital * monthlyRate + contributionMonthly;
+          const denominator = startCapital * monthlyRate + contributionMonthly;
+          if (numerator <= 0 || denominator <= 0) {
+            return Infinity;
+          }
+          const months = Math.log(numerator / denominator) / Math.log(1 + monthlyRate);
+          return months;
+        },
+        seededRandom(seed) {
+          let t = seed >>> 0;
+          return function () {
+            t += 0x6D2B79F5;
+            let r = Math.imul(t ^ (t >>> 15), 1 | t);
+            r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+            return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+          };
+        },
+        boxMuller(randomFn) {
+          let u = 0;
+          let v = 0;
+          while (u === 0) u = randomFn();
+          while (v === 0) v = randomFn();
+          return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+        },
+        buildSimulation() {
+          const monthlyRate = this.annualToMonthlyRate(this.selected.cagr / 100);
+          const withdrawalMonths = Math.round(this.selected.years * 12);
+          const contributionMonthly = this.contributionMonthly;
+          const requiredStart = this.requiredStart;
+          const capMonths = 600;
+
+          let monthsAccum = 0;
+          let autoStatus = 'ok';
+          if (this.contributionMode === 'fixed') {
+            monthsAccum = Math.round(this.contributionYears * 12);
+            autoStatus = 'fixed';
+          } else {
+            const monthsNeeded = this.monthsToReach(this.startCapital, contributionMonthly, this.selected.cagr, requiredStart);
+            if (!Number.isFinite(monthsNeeded)) {
+              monthsAccum = capMonths;
+              autoStatus = 'unreachable';
+            } else if (monthsNeeded > capMonths) {
+              monthsAccum = capMonths;
+              autoStatus = 'unreachable';
+            } else {
+              monthsAccum = Math.max(0, Math.ceil(monthsNeeded));
+            }
+          }
+
+          const totalMonths = monthsAccum + withdrawalMonths;
+          let balance = this.startCapital;
+          const balances = [balance];
+          let ruinMonth = null;
+
+          for (let month = 1; month <= totalMonths; month++) {
+            balance = balance * (1 + monthlyRate);
+            if (month <= monthsAccum) {
+              balance += contributionMonthly;
+            } else {
+              balance -= this.selected.target;
+            }
+            balances.push(balance);
+            if (ruinMonth === null && balance < 0) {
+              ruinMonth = month;
+            }
+          }
+
+          const accLine = balances.map((value, index) => (index <= monthsAccum ? value : null));
+          const withdrawLine = balances.map((value, index) => (index >= monthsAccum ? value : null));
+          const labels = balances.map((_, index) => (index / 12).toFixed(1));
+
+          let p10 = [];
+          let p50 = [];
+          let p90 = [];
+
+          if (this.monteCarlo.enabled) {
+            const runs = this.monteCarlo.runs;
+            const seed = this.monteCarlo.seed;
+            const randomFn = this.seededRandom(seed);
+            const meanLog = Math.log(1 + this.selected.cagr / 100) / 12;
+            const sigma = (this.monteCarlo.volatility / 100) / Math.sqrt(12);
+            const buckets = Array.from({ length: totalMonths + 1 }, () => []);
+
+            for (let run = 0; run < runs; run++) {
+              let mcBalance = this.startCapital;
+              buckets[0].push(mcBalance);
+              for (let month = 1; month <= totalMonths; month++) {
+                const z = this.boxMuller(randomFn);
+                const growth = Math.exp(meanLog + sigma * z);
+                mcBalance = mcBalance * growth;
+                if (month <= monthsAccum) {
+                  mcBalance += contributionMonthly;
+                } else {
+                  mcBalance -= this.selected.target;
+                }
+                buckets[month].push(mcBalance);
+              }
+            }
+
+            const percentile = (arr, q) => {
+              const sorted = arr.slice().sort((a, b) => a - b);
+              const idx = Math.floor((sorted.length - 1) * q);
+              return sorted[idx];
+            };
+
+            p10 = buckets.map((arr) => percentile(arr, 0.1));
+            p50 = buckets.map((arr) => percentile(arr, 0.5));
+            p90 = buckets.map((arr) => percentile(arr, 0.9));
+          }
+
+          return {
+            labels,
+            accLine,
+            withdrawLine,
+            p10,
+            p50,
+            p90,
+            monthsAccum,
+            monthsTotal: totalMonths,
+            endBalance: balances[balances.length - 1],
+            ruinMonth,
+            autoStatus
+          };
+        },
+        formatCurrency(value) {
+          if (!Number.isFinite(value)) {
+            return 'n/a';
+          }
+          const abs = Math.abs(value);
+          const sign = value < 0 ? '-' : '';
+          if (abs >= 1000000) {
+            return sign + (abs / 1000000).toFixed(2) + 'M EUR';
+          }
+          if (abs >= 1000) {
+            return sign + (abs / 1000).toFixed(1) + 'k EUR';
+          }
+          return sign + Math.round(abs) + ' EUR';
+        },
+        formatShort(value) {
+          if (!Number.isFinite(value)) {
+            return 'n/a';
+          }
+          if (Math.abs(value) >= 1000000) {
+            return (value / 1000000).toFixed(2) + 'M';
+          }
+          if (Math.abs(value) >= 1000) {
+            return (value / 1000).toFixed(1) + 'k';
+          }
+          return Math.round(value).toString();
+        },
+        formatPct(value) {
+          if (!Number.isFinite(value)) {
+            return 'n/a';
+          }
+          return value.toFixed(1) + '%';
+        },
+        formatYears(months) {
+          if (!Number.isFinite(months)) {
+            return 'n/a';
+          }
+          const years = months / 12;
+          if (years < 1) {
+            return Math.round(months) + ' mo';
+          }
+          return years.toFixed(1) + 'y';
+        },
+        cellStyle(target, year) {
+          const value = this.requiredCapital(target, year, this.selected.cagr);
+          const min = this.matrixBounds.min;
+          const max = this.matrixBounds.max;
+          const t = (value - min) / (max - min || 1);
+          const hue = 130 - t * 90;
+          const light = 92 - t * 30;
+          return {
+            background: `hsl(${hue}, 65%, ${light}%)`
+          };
+        },
+        setupCharts() {
+          const requiredCtx = this.$refs.requiredChart.getContext('2d');
+          this.charts.required = markRaw(new Chart(requiredCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              interaction: { mode: 'index', intersect: false },
+              plugins: {
+                legend: { position: 'bottom' }
+              },
+              scales: {
+                x: { title: { display: true, text: 'CAGR (%)' } },
+                y: { title: { display: true, text: 'Required start (EUR)' } }
+              }
+            }
+          }));
+
+          const balanceCtx = this.$refs.balanceChart.getContext('2d');
+          this.charts.balance = markRaw(new Chart(balanceCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              interaction: { mode: 'index', intersect: false },
+              plugins: {
+                legend: { position: 'bottom' }
+              },
+              scales: {
+                x: { title: { display: true, text: 'Years from start' } },
+                y: { title: { display: true, text: 'Balance (EUR)' } }
+              }
+            }
+          }));
+        },
+        updateRequiredChart() {
+          if (!this.charts.required) return;
+          const palette = ['#e07a5f', '#3d7ea6', '#f2c14e', '#6a994e', '#ee9b00', '#0a9396'];
+          const labels = this.cagrList.map((cagr) => cagr + '%');
+          const datasets = this.targets.map((target, index) => ({
+            label: this.formatShort(target) + ' / mo',
+            data: this.cagrList.map((cagr) => this.requiredCapital(target, this.selected.years, cagr)),
+            borderColor: palette[index % palette.length],
+            backgroundColor: palette[index % palette.length],
+            borderWidth: 2,
+            tension: 0.35,
+            pointRadius: 3,
+            pointBackgroundColor: '#fff',
+            pointBorderWidth: 1.5
+          }));
+          const chart = this.charts.required;
+          chart.data.labels = labels;
+          chart.data.datasets = datasets;
+          chart.options.scales.y.ticks = {
+            callback: (value) => this.formatShort(value)
+          };
+          chart.update();
+        },
+        updateBalanceChart() {
+          if (!this.charts.balance) return;
+          const chart = this.charts.balance;
+          chart.data.labels = this.simulation.labels;
+
+          if (this.monteCarlo.enabled && this.simulation.p50.length) {
+            chart.data.datasets = [
+              {
+                label: 'p10',
+                data: this.simulation.p10,
+                borderColor: 'rgba(61, 126, 166, 0.35)',
+                backgroundColor: 'rgba(61, 126, 166, 0.1)',
+                borderWidth: 1,
+                pointRadius: 0,
+                fill: false
+              },
+              {
+                label: 'p90',
+                data: this.simulation.p90,
+                borderColor: 'rgba(61, 126, 166, 0.35)',
+                backgroundColor: 'rgba(61, 126, 166, 0.18)',
+                borderWidth: 1,
+                pointRadius: 0,
+                fill: '-1'
+              },
+              {
+                label: 'Median',
+                data: this.simulation.p50,
+                borderColor: '#3d7ea6',
+                backgroundColor: '#3d7ea6',
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0.3
+              }
+            ];
+          } else {
+            chart.data.datasets = [
+              {
+                label: 'Accumulation',
+                data: this.simulation.accLine,
+                borderColor: '#3d7ea6',
+                backgroundColor: '#3d7ea6',
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0.3,
+                spanGaps: true
+              },
+              {
+                label: 'Withdrawal',
+                data: this.simulation.withdrawLine,
+                borderColor: '#e07a5f',
+                backgroundColor: '#e07a5f',
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0.3,
+                spanGaps: true
+              }
+            ];
+          }
+
+          chart.options.scales.y.ticks = {
+            callback: (value) => this.formatShort(value)
+          };
+          chart.update();
+        },
+        refresh() {
+          this.sanitizeInputs();
+          this.simulation = this.buildSimulation();
+          this.updateRequiredChart();
+          this.updateBalanceChart();
+        }
+      },
+      mounted() {
+        this.setupCharts();
+        this.refresh();
+
+        this.$watch(
+          () => [
+            this.ranges.targetMin,
+            this.ranges.targetMax,
+            this.ranges.targetStep,
+            this.ranges.yearsMin,
+            this.ranges.yearsMax,
+            this.ranges.yearsStep,
+            this.ranges.cagrMin,
+            this.ranges.cagrMax,
+            this.ranges.cagrStep,
+            this.selected.target,
+            this.selected.years,
+            this.selected.cagr,
+            this.startCapital,
+            this.contributionAmount,
+            this.contributionFrequency,
+            this.contributionMode,
+            this.contributionYears,
+            this.monteCarlo.enabled,
+            this.monteCarlo.volatility,
+            this.monteCarlo.runs
+          ],
+          () => this.refresh()
+        );
+
+        window.requestAnimationFrame(() => document.body.classList.add('loaded'));
+      },
+      beforeUnmount() {
+        if (this.charts.required) {
+          this.charts.required.destroy();
+        }
+        if (this.charts.balance) {
+          this.charts.balance.destroy();
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
