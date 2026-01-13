@@ -240,10 +240,6 @@ export function useTour() {
       popover: {
         title: step.popover.title,
         description: step.popover.description,
-        showButtons: ['next', 'previous', 'close'] as ('next' | 'previous' | 'close')[],
-        nextBtnText: index === TOUR_STEPS.length - 1 ? 'Finish' : 'Next',
-        prevBtnText: 'Previous',
-        showProgress: true,
         onPopoverRender: (popover: { wrapper: Element }) => {
           injectTTSControls(popover.wrapper, index)
         }
@@ -255,10 +251,37 @@ export function useTour() {
       showProgress: true,
       smoothScroll: true,
       allowClose: true,
+      showButtons: ['next', 'previous', 'close'],
+      nextBtnText: 'Next',
+      prevBtnText: 'Previous',
+      doneBtnText: 'Finish',
       stagePadding: 8,
       stageRadius: 12,
       popoverOffset: 12,
       steps,
+      onNextClick: () => {
+        if (!driverInstance) return
+        const state = driverInstance.getState()
+        if (state.activeIndex === TOUR_STEPS.length - 1) {
+          // Last step - close the tour
+          stopTTS()
+          driverInstance.destroy()
+        } else {
+          stopTTS()
+          driverInstance.moveNext()
+        }
+      },
+      onPrevClick: () => {
+        if (!driverInstance) return
+        stopTTS()
+        driverInstance.movePrevious()
+      },
+      onCloseClick: () => {
+        stopTTS()
+        if (driverInstance) {
+          driverInstance.destroy()
+        }
+      },
       onHighlightStarted: () => {
         stopTTS()
       },
