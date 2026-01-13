@@ -2,45 +2,57 @@
  * Formatting utilities for displaying values
  */
 
-/**
- * Formats a value as currency with EUR suffix
- * Uses K/M abbreviations for large numbers
- *
- * @param value - Numeric value to format
- * @returns Formatted currency string
- */
-export function formatCurrency(value: number): string {
-  if (!Number.isFinite(value)) {
-    return 'n/a'
-  }
-  const abs = Math.abs(value)
-  const sign = value < 0 ? '-' : ''
-  if (abs >= 1000000) {
-    return sign + (abs / 1000000).toFixed(2) + 'M EUR'
-  }
-  if (abs >= 1000) {
-    return sign + (abs / 1000).toFixed(1) + 'k EUR'
-  }
-  return sign + Math.round(abs) + ' EUR'
+import type { Currency } from '../types'
+
+/** Currency symbols map */
+const CURRENCY_SYMBOLS: Record<Currency, string> = {
+  EUR: '\u20AC',
+  USD: '$'
 }
 
 /**
- * Formats a value with K/M abbreviation
+ * Formats a value as currency with symbol prefix
+ * Uses K/M abbreviations for large numbers
  *
  * @param value - Numeric value to format
- * @returns Abbreviated number string
+ * @param currency - Currency type (EUR or USD)
+ * @returns Formatted currency string (e.g., "€1.5k", "$2.34M")
  */
-export function formatShort(value: number): string {
+export function formatCurrency(value: number, currency: Currency = 'EUR'): string {
   if (!Number.isFinite(value)) {
     return 'n/a'
   }
+  const symbol = CURRENCY_SYMBOLS[currency]
+  const abs = Math.abs(value)
+  const sign = value < 0 ? '-' : ''
+  if (abs >= 1000000) {
+    return `${sign}${symbol}${(abs / 1000000).toFixed(2)}M`
+  }
+  if (abs >= 1000) {
+    return `${sign}${symbol}${(abs / 1000).toFixed(1)}k`
+  }
+  return `${sign}${symbol}${Math.round(abs)}`
+}
+
+/**
+ * Formats a value with K/M abbreviation and optional currency symbol
+ *
+ * @param value - Numeric value to format
+ * @param currency - Optional currency type for symbol prefix
+ * @returns Abbreviated number string (e.g., "€1.5k" or "1.5k")
+ */
+export function formatShort(value: number, currency?: Currency): string {
+  if (!Number.isFinite(value)) {
+    return 'n/a'
+  }
+  const symbol = currency ? CURRENCY_SYMBOLS[currency] : ''
   if (Math.abs(value) >= 1000000) {
-    return (value / 1000000).toFixed(2) + 'M'
+    return `${symbol}${(value / 1000000).toFixed(2)}M`
   }
   if (Math.abs(value) >= 1000) {
-    return (value / 1000).toFixed(1) + 'k'
+    return `${symbol}${(value / 1000).toFixed(1)}k`
   }
-  return Math.round(value).toString()
+  return `${symbol}${Math.round(value)}`
 }
 
 /**

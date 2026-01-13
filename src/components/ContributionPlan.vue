@@ -15,7 +15,7 @@ const store = useCalculatorStore()
     <div class="control-grid">
       <!-- Starting capital -->
       <div class="control">
-        <label>Starting capital (EUR)</label>
+        <label>Starting capital ({{ store.currency }})</label>
         <input type="number" v-model.number="store.contribution.startCapital" />
       </div>
 
@@ -25,7 +25,7 @@ const store = useCalculatorStore()
         :min="0"
         :max="5000"
         :step="50"
-        label="Contribution amount (EUR)"
+        :label="`Contribution amount (${store.currency})`"
       />
 
       <!-- Contribution frequency -->

@@ -11,7 +11,7 @@ const store = useCalculatorStore()
     <div class="control-grid">
       <!-- Monthly target range -->
       <div class="control">
-        <label>Monthly target range (EUR) <span class="hint">(min, max, step)</span></label> 
+        <label>Monthly target range ({{ store.currency }}) <span class="hint">(min, max, step)</span></label> 
         <div class="inline-row">
           <input type="number" v-model.number="store.ranges.targetMin" />
           <input type="number" v-model.number="store.ranges.targetMax" />

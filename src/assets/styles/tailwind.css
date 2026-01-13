@@ -518,14 +518,16 @@ body.loaded [data-animate] {
 
 /* Tour trigger button */
 .tour-trigger {
-  @apply fixed bottom-7 right-7 flex items-center gap-2;
-  @apply px-[18px] py-3 rounded-full cursor-pointer font-semibold text-[0.9rem];
+  @apply fixed right-7 w-[52px] h-[52px] rounded-full;
+  @apply flex items-center justify-center cursor-pointer;
   @apply z-[99];
-  border-radius: var(--radius-pill);
+  top: 156px; /* 92px + 52px currency button + 12px gap */
   background: var(--surface-raised);
   border: 1px solid var(--border-base);
   box-shadow: var(--shadow-elevated);
   color: var(--interactive-base);
+  font-weight: 700;
+  font-size: 1.25rem;
   font-family: inherit;
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -534,14 +536,21 @@ body.loaded [data-animate] {
 }
 
 .tour-trigger:hover {
-  @apply scale-105;
-  box-shadow: var(--shadow-elevated-hover);
+  @apply scale-110 rotate-[10deg];
+  box-shadow: var(--shadow-elevated);
   border-color: var(--interactive-base);
-  background: var(--interactive-surface);
 }
 
 .tour-trigger:active {
-  @apply scale-[0.98];
+  @apply scale-95;
+}
+
+@media (max-width: 980px) {
+  .tour-trigger {
+    @apply right-5 w-12 h-12;
+    top: 132px; /* 76px + 48px currency button + 8px gap */
+    font-size: 1.1rem;
+  }
 }
 
 /* Driver.js custom styling */
@@ -692,4 +701,99 @@ body.loaded [data-animate] {
 .tour-pause-btn:hover {
   background: var(--status-warning-border);
   color: var(--surface-raised);
+}
+
+/* ============================================
+   GITHUB RIBBON
+   ============================================ */
+
+.github-ribbon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 90;
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.github-ribbon span {
+  position: absolute;
+  display: block;
+  width: 225px;
+  padding: 8px 0;
+  background: var(--interactive-base);
+  color: white;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transform: rotate(-45deg);
+  top: 40px;
+  left: -55px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  transition: background 0.2s ease;
+}
+
+.github-ribbon span:hover {
+  background: var(--interactive-hover);
+}
+
+@media (max-width: 600px) {
+  .github-ribbon {
+    width: 100px;
+    height: 100px;
+  }
+
+  .github-ribbon span {
+    width: 150px;
+    font-size: 0.65rem;
+    padding: 5px 0;
+    top: 25px;
+    left: -40px;
+  }
+}
+
+/* ============================================
+   CURRENCY TOGGLE
+   ============================================ */
+
+.currency-toggle {
+  @apply fixed right-7 w-[52px] h-[52px] rounded-full;
+  @apply flex items-center justify-center cursor-pointer;
+  @apply z-[100];
+  top: 92px; /* 28px + 52px theme button + 12px gap */
+  background: var(--surface-raised);
+  border: 1px solid var(--border-base);
+  box-shadow: var(--shadow-elevated);
+  color: var(--interactive-base);
+  font-weight: 700;
+  font-size: 1.25rem;
+  font-family: inherit;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  @apply transition-all duration-300;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.currency-toggle:hover {
+  @apply scale-110;
+  box-shadow: var(--shadow-elevated);
+  border-color: var(--interactive-base);
+}
+
+.currency-toggle:active {
+  @apply scale-95;
+}
+
+@media (max-width: 980px) {
+  .currency-toggle {
+    @apply right-5 w-12 h-12;
+    top: 76px; /* 20px + 48px theme button + 8px gap */
+    font-size: 1.1rem;
+  }
 }

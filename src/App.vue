@@ -5,6 +5,8 @@ import { useTheme } from './composables/useTheme'
 
 // Components
 import ThemeToggle from './components/ui/ThemeToggle.vue'
+import CurrencyToggle from './components/ui/CurrencyToggle.vue'
+import GitHubRibbon from './components/ui/GitHubRibbon.vue'
 import RangeBuilder from './components/RangeBuilder.vue'
 import ScenarioInputs from './components/ScenarioInputs.vue'
 import ContributionPlan from './components/ContributionPlan.vue'
@@ -60,7 +62,11 @@ onMounted(() => {
 
 <template>
   <div class="app">
-    <!-- Theme toggle button -->
+    <!-- GitHub ribbon -->
+    <GitHubRibbon />
+
+    <!-- Currency and theme toggles -->
+    <CurrencyToggle />
     <ThemeToggle />
 
     <!-- Header -->

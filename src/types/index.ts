@@ -1,3 +1,6 @@
+// Currency type for display formatting
+export type Currency = 'EUR' | 'USD'
+
 // Range configuration for parameter bounds
 export interface RangeConfig {
   targetMin: number

@@ -87,6 +87,11 @@ function updateChart() {
       color: colors.tickColor,
       callback: (value) => store.format.short(value as number)
     }
+    // Update y-axis title with current currency
+    const yScale = chartInstance.options.scales.y as { title?: { text?: string } }
+    if (yScale.title) {
+      yScale.title.text = `Balance (${store.currency})`
+    }
   }
 
   chartInstance.update()
@@ -118,7 +123,8 @@ watch(
   () => [
     store.simulation,
     store.monteCarlo.enabled,
-    store.currentTheme
+    store.currentTheme,
+    store.currency
   ],
   () => {
     updateChart()

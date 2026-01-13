@@ -6,7 +6,8 @@ import type {
   MonteCarloConfig,
   ContributionConfig,
   SimulationResult,
-  MatrixBounds
+  MatrixBounds,
+  Currency
 } from '../types'
 import { requiredCapital, solveCagr, makeRange, snap } from '../utils/calculations'
 import { buildSimulation } from '../utils/simulation'
@@ -63,6 +64,8 @@ export const useCalculatorStore = defineStore('calculator', () => {
   })
 
   const currentTheme = ref<'light' | 'dark'>('dark')
+
+  const currency = ref<Currency>('EUR')
 
   // === GETTERS ===
 
@@ -248,16 +251,20 @@ export const useCalculatorStore = defineStore('calculator', () => {
     setTheme(currentTheme.value === 'dark' ? 'light' : 'dark')
   }
 
+  function toggleCurrency() {
+    currency.value = currency.value === 'EUR' ? 'USD' : 'EUR'
+  }
+
   function initializeTheme() {
     // Theme value is restored by pinia-plugin-persistedstate
     // We just need to apply it to the DOM
     document.documentElement.setAttribute('data-theme', currentTheme.value)
   }
 
-  // Expose formatting utilities
+  // Expose formatting utilities (currency-aware)
   const format = {
-    currency: formatCurrency,
-    short: formatShort,
+    currency: (value: number) => formatCurrency(value, currency.value),
+    short: (value: number) => formatShort(value, currency.value),
     pct: formatPct,
     years: formatYears
   }
@@ -270,6 +277,7 @@ export const useCalculatorStore = defineStore('calculator', () => {
     monteCarlo,
     simulation,
     currentTheme,
+    currency,
 
     // Getters
     targets,
@@ -293,6 +301,7 @@ export const useCalculatorStore = defineStore('calculator', () => {
     refresh,
     setTheme,
     toggleTheme,
+    toggleCurrency,
     initializeTheme,
 
     // Utilities
@@ -302,6 +311,6 @@ export const useCalculatorStore = defineStore('calculator', () => {
 }, {
   persist: {
     key: 'roi-calculator-state',
-    pick: ['ranges', 'selected', 'contribution', 'monteCarlo', 'currentTheme']
+    pick: ['ranges', 'selected', 'contribution', 'monteCarlo', 'currentTheme', 'currency']
   }
 })

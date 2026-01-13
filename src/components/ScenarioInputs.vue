@@ -15,7 +15,7 @@ const store = useCalculatorStore()
         :min="store.ranges.targetMin"
         :max="store.ranges.targetMax"
         :step="store.ranges.targetStep"
-        label="Monthly withdrawal target (EUR)"
+        :label="`Monthly withdrawal target (${store.currency})`"
       />
 
       <RangeInput
