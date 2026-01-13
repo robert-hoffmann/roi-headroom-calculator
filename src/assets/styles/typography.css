@@ -1,0 +1,71 @@
+/* Typography styles */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.hero-text {
+  background: var(--surface-raised);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-base);
+  padding: 32px 36px;
+  box-shadow: var(--shadow-elevated);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-text::after {
+  content: none;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.7rem;
+  color: var(--interactive-base);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-family: "Fraunces", serif;
+  font-size: clamp(2.1rem, 3.5vw, 3.1rem);
+  margin: 0 0 14px;
+}
+
+.lede {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  margin: 0 0 18px;
+  line-height: 1.6;
+  max-width: 54ch;
+}
+
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.tag {
+  padding: 8px 14px;
+  background: var(--interactive-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: var(--interactive-base);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.tag:hover {
+  transform: scale(1.05);
+  background: var(--interactive-base);
+  color: var(--surface-raised);
+}

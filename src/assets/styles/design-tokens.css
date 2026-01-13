@@ -1,0 +1,114 @@
+/* Design Tokens - Light Theme */
+:root,
+[data-theme="light"] {
+  /* === SURFACES === */
+  --surface-base: #f7f4ee;
+  --surface-raised: #ffffff;
+  --surface-sunken: #efe9df;
+  --surface-overlay: rgba(255, 255, 255, 0.85);
+
+  /* === BORDERS === */
+  --border-subtle: rgba(31, 31, 27, 0.06);
+  --border-base: rgba(31, 31, 27, 0.08);
+  --border-strong: rgba(31, 31, 27, 0.12);
+
+  /* === TEXT === */
+  --text-primary: #1f1f1b;
+  --text-secondary: #4b4b40;
+  --text-tertiary: #6b6b5f;
+
+  /* === INTERACTIVE (Blue) === */
+  --interactive-base: #3d7ea6;
+  --interactive-hover: #2f6685;
+  --interactive-active: #245170;
+  --interactive-rgb: 61, 126, 166;
+
+  /* === STATES === */
+  --focus-ring: rgba(61, 126, 166, 0.4);
+  --focus-background: rgba(61, 126, 166, 0.1);
+  --interactive-surface: rgba(61, 126, 166, 0.08);
+  --interactive-surface-hover: rgba(61, 126, 166, 0.12);
+  --interactive-selected: rgba(61, 126, 166, 0.15);
+
+  /* === WARNINGS === */
+  --status-warning-border: rgba(224, 122, 95, 0.5);
+  --status-warning-background: rgba(224, 122, 95, 0.08);
+  --status-warning-text: #b85c3e;
+
+  /* === INPUTS === */
+  --input-background: rgba(255, 255, 255, 0.7);
+  --input-border: var(--border-strong);
+  --input-border-focus: var(--interactive-base);
+  --input-text: var(--text-primary);
+
+  /* === SHADOWS === */
+  --shadow-base: 0 2px 8px rgba(20, 18, 10, 0.06), 0 1px 2px rgba(20, 18, 10, 0.04);
+  --shadow-elevated: 0 8px 32px rgba(20, 18, 10, 0.08), 0 2px 8px rgba(20, 18, 10, 0.04);
+  --shadow-elevated-hover: 0 12px 48px rgba(20, 18, 10, 0.12), 0 4px 12px rgba(20, 18, 10, 0.06);
+
+  /* === LAYOUT === */
+  --radius: 20px;
+  --radius-small: 12px;
+  --radius-pill: 999px;
+
+  /* === GLASSMORPHISM === */
+  --glass-blur: 12px;
+  --glass-saturation: 180%;
+}
+
+/* Design Tokens - Dark Theme */
+[data-theme="dark"] {
+  /* === SURFACES === */
+  --surface-base: #0a0a08;
+  --surface-raised: rgba(28, 28, 25, 0.7);
+  --surface-sunken: #131311;
+  --surface-overlay: rgba(28, 28, 25, 0.8);
+
+  /* === BORDERS === */
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-base: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.1);
+
+  /* === TEXT === */
+  --text-primary: #e8e6e0;
+  --text-secondary: #b8b6ac;
+  --text-tertiary: #8a8880;
+
+  /* === INTERACTIVE (Blue) === */
+  --interactive-base: #5da4d4;
+  --interactive-hover: #72b3de;
+  --interactive-active: #87c2e8;
+  --interactive-rgb: 93, 164, 212;
+
+  /* === STATES === */
+  --focus-ring: rgba(93, 164, 212, 0.5);
+  --focus-background: rgba(93, 164, 212, 0.1);
+  --interactive-surface: rgba(93, 164, 212, 0.12);
+  --interactive-surface-hover: rgba(93, 164, 212, 0.16);
+  --interactive-selected: rgba(93, 164, 212, 0.2);
+
+  /* === WARNINGS === */
+  --status-warning-border: rgba(224, 122, 95, 0.6);
+  --status-warning-background: rgba(224, 122, 95, 0.12);
+  --status-warning-text: #e07a5f;
+
+  /* === INPUTS === */
+  --input-background: rgba(36, 36, 32, 0.5);
+  --input-border: var(--border-strong);
+  --input-border-focus: var(--interactive-base);
+  --input-text: var(--text-primary);
+
+  /* === SHADOWS === */
+  --shadow-base: 0 2px 8px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-elevated-hover: 0 12px 48px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.25);
+
+  /* === LAYOUT === */
+  --radius: 20px;
+  --radius-small: 12px;
+  --radius-pill: 999px;
+
+  /* === GLASSMORPHISM === */
+  --glass-blur: 16px;
+  --glass-saturation: 120%;
+}
