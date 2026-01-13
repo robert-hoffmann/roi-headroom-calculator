@@ -39,7 +39,12 @@ export function useChartConfig() {
       interactiveRgb: getCSSVariable('--interactive-rgb'),
       interactiveSurface: getCSSVariable('--interactive-surface'),
       interactiveSelected: getCSSVariable('--interactive-selected'),
-      pointBackground: currentTheme.value === 'dark' ? '#1c1c19' : '#fff'
+      pointBackground: currentTheme.value === 'dark' ? '#1c1c19' : '#fff',
+      // Chart accent colors for differentiating data series
+      accent1: getCSSVariable('--chart-accent-1'),
+      accent1Rgb: getCSSVariable('--chart-accent-1-rgb'),
+      accent2: getCSSVariable('--chart-accent-2'),
+      accent2Rgb: getCSSVariable('--chart-accent-2-rgb')
     }
   }
 

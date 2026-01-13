@@ -23,6 +23,12 @@
   --interactive-active: #245170;
   --interactive-rgb: 61, 126, 166;
 
+  /* === CHART ACCENTS === */
+  --chart-accent-1: #3d7ea6;
+  --chart-accent-1-rgb: 61, 126, 166;
+  --chart-accent-2: #e07a5f;
+  --chart-accent-2-rgb: 224, 122, 95;
+
   /* === STATES === */
   --focus-ring: rgba(61, 126, 166, 0.4);
   --focus-background: rgba(61, 126, 166, 0.1);
@@ -79,6 +85,12 @@
   --interactive-hover: #72b3de;
   --interactive-active: #87c2e8;
   --interactive-rgb: 93, 164, 212;
+
+  /* === CHART ACCENTS === */
+  --chart-accent-1: #5da4d4;
+  --chart-accent-1-rgb: 93, 164, 212;
+  --chart-accent-2: #f4a088;
+  --chart-accent-2-rgb: 244, 160, 136;
 
   /* === STATES === */
   --focus-ring: rgba(93, 164, 212, 0.5);

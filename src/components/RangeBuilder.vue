@@ -11,7 +11,7 @@ const store = useCalculatorStore()
     <div class="control-grid">
       <!-- Monthly target range -->
       <div class="control">
-        <label>Monthly target range (EUR)</label>
+        <label>Monthly target range (EUR) <span class="hint">(min, max, step)</span></label> 
         <div class="inline-row">
           <input type="number" v-model.number="store.ranges.targetMin" />
           <input type="number" v-model.number="store.ranges.targetMax" />
@@ -22,12 +22,12 @@ const store = useCalculatorStore()
             {{ store.format.short(value) }}
           </span>
         </div>
-        <div class="hint">Min, max, step</div>
+        
       </div>
 
       <!-- Headroom years range -->
       <div class="control">
-        <label>Headroom years range</label>
+        <label>Headroom years range <span class="hint">(min, max, step)</span></label>
         <div class="inline-row">
           <input type="number" v-model.number="store.ranges.yearsMin" />
           <input type="number" v-model.number="store.ranges.yearsMax" />
@@ -38,12 +38,11 @@ const store = useCalculatorStore()
             {{ value }}y
           </span>
         </div>
-        <div class="hint">Min, max, step</div>
       </div>
 
       <!-- CAGR range -->
       <div class="control">
-        <label>CAGR range (%)</label>
+        <label>CAGR range (%) <span class="hint">(min, max, step)</span></label>
         <div class="inline-row">
           <input type="number" v-model.number="store.ranges.cagrMin" />
           <input type="number" v-model.number="store.ranges.cagrMax" />
@@ -54,7 +53,6 @@ const store = useCalculatorStore()
             {{ value }}%
           </span>
         </div>
-        <div class="hint">Min, max, step</div>
       </div>
     </div>
   </div>

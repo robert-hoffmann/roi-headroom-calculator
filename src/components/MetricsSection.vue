@@ -6,34 +6,22 @@ const store = useCalculatorStore()
 </script>
 
 <template>
-  <header class="hero" data-animate>
-    <div class="hero-text">
-      <div class="eyebrow">ROI Headroom Studio</div>
-      <h1>Design your runway for monthly income</h1>
-      <p class="lede">
-        Set a monthly withdrawal, headroom years, and target CAGR. Build the required start,
-        then simulate how contributions and compounding move you across time.
-      </p>
-      <div class="hero-tags">
-        <span class="tag">Range builder</span>
-        <span class="tag">Scenario matrix</span>
-        <span class="tag">Live charts</span>
-      </div>
-    </div>
+  <div class="panel hero-metrics" data-animate>
+    <h2>Key metrics</h2>
 
-    <div class="hero-metrics">
+    <div class="metrics-grid">
       <StatCard
         label="Required start"
         :value="store.format.currency(store.requiredStart)"
-        :meta="`for ${store.format.currency(store.selected.target)} / mo, ${store.selected.years}y, ${store.selected.cagr}% CAGR`"
+        :meta="`${store.format.currency(store.selected.target)} / mo, ${store.selected.years}y, ${store.selected.cagr}% CAGR`"
       />
       <StatCard
-        label="CAGR needed for your start"
+        label="CAGR needed"
         :value="store.requiredCagrText"
         :meta="`based on ${store.format.currency(store.contribution.startCapital)} starting capital`"
       />
       <StatCard
-        label="Auto time to required start"
+        label="Time to target"
         :value="store.autoTimeText"
         :meta="`with ${store.format.currency(store.contributionMonthly)} / mo contributions`"
       />
@@ -44,5 +32,18 @@ const store = useCalculatorStore()
         :warning="store.simulation.endBalance < 0"
       />
     </div>
-  </header>
+  </div>
 </template>
+
+<style scoped>
+.hero-metrics {
+  display: flex;
+  flex-direction: column;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+</style>

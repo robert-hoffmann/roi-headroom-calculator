@@ -5,14 +5,11 @@ import { useTheme } from './composables/useTheme'
 
 // Components
 import ThemeToggle from './components/ui/ThemeToggle.vue'
-import HeroSection from './components/HeroSection.vue'
 import RangeBuilder from './components/RangeBuilder.vue'
 import ScenarioInputs from './components/ScenarioInputs.vue'
 import ContributionPlan from './components/ContributionPlan.vue'
-import ScenarioOutput from './components/ScenarioOutput.vue'
-import ScenarioMatrix from './components/ScenarioMatrix.vue'
-import RequiredChart from './components/RequiredChart.vue'
 import BalanceChart from './components/BalanceChart.vue'
+import MetricsSection from './components/MetricsSection.vue'
 import TourTrigger from './components/TourTrigger.vue'
 
 const store = useCalculatorStore()
@@ -66,8 +63,19 @@ onMounted(() => {
     <!-- Theme toggle button -->
     <ThemeToggle />
 
-    <!-- Hero section with stats -->
-    <HeroSection />
+    <!-- Header -->
+    <header class="app-header" data-animate>
+      <div class="header-content">
+        <span class="eyebrow">ROI Headroom Studio</span>
+        <h1>Design your runway for monthly income</h1>
+      </div>
+    </header>
+
+    <!-- Overview: Stats + Chart side by side (priority zone) -->
+    <section class="grid two overview">
+      <MetricsSection />
+      <BalanceChart />
+    </section>
 
     <!-- Range builder and Scenario inputs -->
     <section class="grid two">
@@ -75,19 +83,9 @@ onMounted(() => {
       <ScenarioInputs />
     </section>
 
-    <!-- Contribution plan and Scenario output -->
-    <section class="grid two">
+    <!-- Contribution plan (full width) -->
+    <section class="contribution-section">
       <ContributionPlan />
-      <ScenarioOutput />
-    </section>
-
-    <!-- Scenario matrix -->
-    <ScenarioMatrix />
-
-    <!-- Charts -->
-    <section class="grid two">
-      <RequiredChart />
-      <BalanceChart />
     </section>
 
     <!-- Footer -->

@@ -5,7 +5,7 @@ import type { TourStep, TourState } from '../types'
 
 const TOUR_STEPS: TourStep[] = [
   {
-    element: '.hero-text',
+    element: '.app-header',
     popover: {
       title: 'Welcome to ROI Headroom Studio',
       description:
@@ -14,7 +14,7 @@ const TOUR_STEPS: TourStep[] = [
     tts: 'Welcome to ROI Headroom Studio. This tool helps you calculate how much starting capital you need to sustain monthly withdrawals over time, given different growth rate assumptions.'
   },
   {
-    element: '.hero-metrics',
+    element: '.overview .hero-metrics',
     popover: {
       title: 'Key Metrics at a Glance',
       description:
@@ -23,7 +23,16 @@ const TOUR_STEPS: TourStep[] = [
     tts: 'These four cards show your most important numbers: the required starting capital, the growth rate needed for your current capital, how long until you reach your target, and your projected end balance.'
   },
   {
-    element: 'section:nth-of-type(1) .panel:first-child',
+    element: '.overview > .panel:last-child',
+    popover: {
+      title: 'Balance Path',
+      description:
+        "This chart shows your projected account balance over time. It displays the accumulation phase where you contribute, followed by the withdrawal phase. With Monte Carlo enabled, you'll see probability bands."
+    },
+    tts: "This chart shows your projected account balance over time. It displays the accumulation phase where you contribute, followed by the withdrawal phase. With Monte Carlo enabled, you'll see probability bands."
+  },
+  {
+    element: 'section:nth-of-type(2) .panel:first-child',
     popover: {
       title: 'Range Builder',
       description:
@@ -32,7 +41,7 @@ const TOUR_STEPS: TourStep[] = [
     tts: 'Use the Range Builder to set the boundaries for your scenarios. Adjust the minimum, maximum, and step values for monthly targets, time horizons, and growth rates. The chips below preview your generated values.'
   },
   {
-    element: 'section:nth-of-type(1) .panel:last-child',
+    element: 'section:nth-of-type(2) .panel:last-child',
     popover: {
       title: 'Select Your Scenario',
       description:
@@ -41,49 +50,13 @@ const TOUR_STEPS: TourStep[] = [
     tts: 'Use these sliders to pick a specific scenario to analyze. Choose your desired monthly withdrawal, how many years you want the money to last, and your expected annual growth rate.'
   },
   {
-    element: 'section:nth-of-type(2) .panel:first-child',
+    element: '.contribution-section .panel',
     popover: {
       title: 'Contribution Plan',
       description:
         'Configure your accumulation phase here. Enter your starting capital, set up recurring contributions, and optionally enable Monte Carlo simulation to see probability ranges based on market volatility.'
     },
     tts: 'Configure your accumulation phase here. Enter your starting capital, set up recurring contributions, and optionally enable Monte Carlo simulation to see probability ranges based on market volatility.'
-  },
-  {
-    element: 'section:nth-of-type(2) .panel:last-child',
-    popover: {
-      title: 'Calculated Metrics',
-      description:
-        'This panel shows the key calculations for your selected scenario: total withdrawals, required starting capital, required growth rate, time to reach your target, and how long your money will last.'
-    },
-    tts: 'This panel shows the key calculations for your selected scenario: total withdrawals, required starting capital, required growth rate, time to reach your target, and how long your money will last.'
-  },
-  {
-    element: 'section:nth-of-type(3)',
-    popover: {
-      title: 'Scenario Matrix',
-      description:
-        'The matrix shows required starting capital across different combinations. Rows are monthly targets, columns are time horizons. Green cells need less capital, red cells need more. Your current selection is highlighted.'
-    },
-    tts: 'The matrix shows required starting capital across different combinations. Rows are monthly targets, columns are time horizons. Green cells need less capital, red cells need more. Your current selection is highlighted.'
-  },
-  {
-    element: 'section:nth-of-type(4) .panel:first-child',
-    popover: {
-      title: 'Required Capital vs Growth Rate',
-      description:
-        'This chart shows how required starting capital changes with different growth rates. Each line represents a different monthly withdrawal target. Higher growth rates mean you need less starting capital.'
-    },
-    tts: 'This chart shows how required starting capital changes with different growth rates. Each line represents a different monthly withdrawal target. Higher growth rates mean you need less starting capital.'
-  },
-  {
-    element: 'section:nth-of-type(4) .panel:last-child',
-    popover: {
-      title: 'Balance Path',
-      description:
-        "This chart shows your projected account balance over time. It displays the accumulation phase where you contribute, followed by the withdrawal phase. With Monte Carlo enabled, you'll see probability bands."
-    },
-    tts: "This chart shows your projected account balance over time. It displays the accumulation phase where you contribute, followed by the withdrawal phase. With Monte Carlo enabled, you'll see probability bands."
   }
 ]
 

@@ -221,11 +221,6 @@ export const useCalculatorStore = defineStore('calculator', () => {
   function setTheme(theme: 'light' | 'dark') {
     currentTheme.value = theme
     document.documentElement.setAttribute('data-theme', theme)
-    try {
-      localStorage.setItem('roi-calculator-theme', theme)
-    } catch (e) {
-      console.warn('Could not save theme preference:', e)
-    }
   }
 
   function toggleTheme() {
@@ -233,12 +228,8 @@ export const useCalculatorStore = defineStore('calculator', () => {
   }
 
   function initializeTheme() {
-    try {
-      const savedTheme = localStorage.getItem('roi-calculator-theme') as 'light' | 'dark' | null
-      currentTheme.value = savedTheme || 'dark'
-    } catch {
-      currentTheme.value = 'dark'
-    }
+    // Theme value is restored by pinia-plugin-persistedstate
+    // We just need to apply it to the DOM
     document.documentElement.setAttribute('data-theme', currentTheme.value)
   }
 
@@ -284,5 +275,10 @@ export const useCalculatorStore = defineStore('calculator', () => {
     // Utilities
     format,
     requiredCapital
+  }
+}, {
+  persist: {
+    key: 'roi-calculator-state',
+    pick: ['ranges', 'selected', 'contribution', 'monteCarlo', 'currentTheme']
   }
 })

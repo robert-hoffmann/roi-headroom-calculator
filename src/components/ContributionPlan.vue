@@ -61,39 +61,6 @@ const store = useCalculatorStore()
         :step="1"
         label="Contribution years"
       />
-
-      <!-- Monte Carlo toggle -->
-      <div class="control">
-        <label>Monte Carlo band</label>
-        <div class="toggle-row">
-          <label class="toggle">
-            <input type="checkbox" v-model="store.monteCarlo.enabled" />
-            Show volatility band
-          </label>
-        </div>
-      </div>
-
-      <!-- Volatility (conditional) -->
-      <div class="control" v-if="store.monteCarlo.enabled">
-        <RangeInput
-          v-model="store.monteCarlo.volatility"
-          :min="0"
-          :max="40"
-          :step="1"
-          label="Volatility (annual %)"
-        />
-        <div class="hint">Higher volatility widens the probability band.</div>
-      </div>
-
-      <!-- Simulation runs (conditional) -->
-      <RangeInput
-        v-if="store.monteCarlo.enabled"
-        v-model="store.monteCarlo.runs"
-        :min="50"
-        :max="500"
-        :step="10"
-        label="Simulation runs"
-      />
     </div>
   </div>
 </template>

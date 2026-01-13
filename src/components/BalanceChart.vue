@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount, watch, markRaw } from 'vue'
 import { Chart, registerables, type ChartConfiguration } from 'chart.js'
 import { useCalculatorStore } from '../stores/calculatorStore'
 import { useChartConfig } from '../composables/useChartConfig'
+import MonteCarloSettings from './ui/MonteCarloSettings.vue'
 
 Chart.register(...registerables)
 
@@ -55,8 +56,8 @@ function updateChart() {
       {
         label: 'Accumulation',
         data: sim.accLine,
-        borderColor: colors.interactiveBase,
-        backgroundColor: colors.interactiveBase,
+        borderColor: colors.accent1,
+        backgroundColor: colors.accent1,
         borderWidth: 2,
         pointRadius: 0,
         tension: 0.3,
@@ -65,8 +66,8 @@ function updateChart() {
       {
         label: 'Withdrawal',
         data: sim.withdrawLine,
-        borderColor: colors.interactiveBase,
-        backgroundColor: colors.interactiveBase,
+        borderColor: colors.accent2,
+        backgroundColor: colors.accent2,
         borderWidth: 2,
         pointRadius: 0,
         tension: 0.3,
@@ -102,7 +103,7 @@ function setupChart() {
     options: {
       ...getBaseChartOptions(),
       scales: {
-        x: { title: { display: true, text: 'Years from start' } },
+        x: { title: { display: true, text: 'Accumulation/Withdrawal over time (years from start)' } },
         y: { title: { display: true, text: 'Balance (EUR)' } }
       }
     }
@@ -142,10 +143,32 @@ defineExpose({ updateChart })
 
 <template>
   <div class="panel" data-animate>
-    <h2>Balance path</h2>
-    <p class="subhead">Accumulation then withdrawals over time.</p>
+    <div class="chart-header">
+      <div>
+        <h2>Balance path</h2>
+      </div>
+      <MonteCarloSettings />
+    </div>
     <div class="chart-wrap">
       <canvas ref="canvasRef"></canvas>
     </div>
   </div>
 </template>
+
+<style scoped>
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.chart-header h2 {
+  margin-bottom: 4px;
+}
+
+.chart-header .subhead {
+  margin-bottom: 0;
+}
+</style>
