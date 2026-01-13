@@ -7,7 +7,8 @@
       "Bash(npm run build:*)",
       "Bash(timeout:*)",
       "Bash(npx vue-tsc:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(npm run type-check:*)"
     ]
   }
 }

@@ -31,7 +31,7 @@ export interface ContributionConfig {
   startCapital: number
   amount: number
   frequency: 'monthly' | 'yearly'
-  mode: 'auto' | 'fixed'
+  mode: 'fixed' | 'stop' | 'continue'
   years: number
 }
 

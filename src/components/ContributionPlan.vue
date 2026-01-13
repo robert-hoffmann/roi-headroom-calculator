@@ -42,12 +42,16 @@ const store = useCalculatorStore()
         <label>Contribution mode</label>
         <div class="toggle-row">
           <label class="toggle">
-            <input type="radio" value="auto" v-model="store.contribution.mode" />
-            Auto until required start
-          </label>
-          <label class="toggle">
             <input type="radio" value="fixed" v-model="store.contribution.mode" />
             Fixed years
+          </label>
+          <label class="toggle">
+            <input type="radio" value="stop" v-model="store.contribution.mode" />
+            Stop after start
+          </label>
+          <label class="toggle">
+            <input type="radio" value="continue" v-model="store.contribution.mode" />
+            Continue after start
           </label>
         </div>
       </div>

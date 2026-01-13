@@ -37,7 +37,7 @@ export const useCalculatorStore = defineStore('calculator', () => {
     startCapital: 0,
     amount: 500,
     frequency: 'monthly',
-    mode: 'auto',
+    mode: 'stop',
     years: 5
   })
 
@@ -104,15 +104,36 @@ export const useCalculatorStore = defineStore('calculator', () => {
       return '0% (overfunded)'
     }
     if (result.status === 'insufficient') {
-      return '> ' + formatPct(result.cagr) + ' (cap)'
+      return '> ' + formatPct(result.cagr)
     }
     return formatPct(result.cagr)
+  })
+
+  const requiredCagrMeta = computed(() => {
+    const result = requiredCagrResult.value
+
+    if (result.status === 'insufficient' && contribution.value.startCapital <= 0) {
+      return 'enter starting capital'
+    }
+    if (result.status === 'overfunded') {
+      return 'overfunded at 0% growth'
+    }
+    return 'if withdrawals started today'
+  })
+
+  const cagrStatus = computed<'success' | 'warning' | 'normal'>(() => {
+    const result = requiredCagrResult.value
+    if (result.status === 'overfunded') return 'success'
+    if (result.status === 'insufficient') return 'warning'
+    if (result.cagr <= selected.value.cagr) return 'success'
+    return 'warning'
   })
 
   const autoTimeText = computed(() => {
     if (contribution.value.mode === 'fixed') {
       return contribution.value.years + 'y (fixed)'
     }
+    // Both 'stop' and 'continue' use auto-calculation
     if (simulation.value.autoStatus === 'unreachable') {
       return '> 50y (not reached)'
     }
@@ -259,6 +280,8 @@ export const useCalculatorStore = defineStore('calculator', () => {
     totalWithdrawals,
     requiredCagrResult,
     requiredCagrText,
+    requiredCagrMeta,
+    cagrStatus,
     autoTimeText,
     runwayText,
     matrixBounds,

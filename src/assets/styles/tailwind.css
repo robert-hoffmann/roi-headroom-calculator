@@ -280,6 +280,11 @@ body.loaded [data-animate] {
     background: var(--status-warning-background);
   }
 
+  .stat-card.success {
+    border-color: var(--status-success-border);
+    background: var(--status-success-background);
+  }
+
   .stat-label {
     @apply uppercase tracking-[0.12em] text-[0.68rem] font-bold mb-1.5;
     @apply whitespace-nowrap;

@@ -41,6 +41,11 @@
   --status-warning-background: rgba(224, 122, 95, 0.08);
   --status-warning-text: #b85c3e;
 
+  /* === SUCCESS === */
+  --status-success-border: rgba(74, 222, 128, 0.5);
+  --status-success-background: rgba(74, 222, 128, 0.08);
+  --status-success-text: #22c55e;
+
   /* === INPUTS === */
   --input-background: rgba(255, 255, 255, 0.7);
   --input-border: var(--border-strong);
@@ -103,6 +108,11 @@
   --status-warning-border: rgba(224, 122, 95, 0.6);
   --status-warning-background: rgba(224, 122, 95, 0.12);
   --status-warning-text: #e07a5f;
+
+  /* === SUCCESS === */
+  --status-success-border: rgba(74, 222, 128, 0.6);
+  --status-success-background: rgba(74, 222, 128, 0.12);
+  --status-success-text: #4ade80;
 
   /* === INPUTS === */
   --input-background: rgba(36, 36, 32, 0.5);

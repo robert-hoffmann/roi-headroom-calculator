@@ -9,7 +9,7 @@ import { seededRandom, boxMuller } from './random'
 export interface SimulationParams {
   startCapital: number
   contributionMonthly: number
-  contributionMode: 'auto' | 'fixed'
+  contributionMode: 'fixed' | 'stop' | 'continue'
   contributionYears: number
   selectedTarget: number
   selectedYears: number
@@ -78,6 +78,9 @@ export function buildSimulation(params: SimulationParams): SimulationResult {
       balance += contributionMonthly
     } else {
       balance -= selectedTarget
+      if (contributionMode === 'continue') {
+        balance += contributionMonthly
+      }
     }
     balances.push(balance)
     if (ruinMonth === null && balance < 0) {
@@ -115,6 +118,9 @@ export function buildSimulation(params: SimulationParams): SimulationResult {
           mcBalance += contributionMonthly
         } else {
           mcBalance -= selectedTarget
+          if (contributionMode === 'continue') {
+            mcBalance += contributionMonthly
+          }
         }
         buckets[month]!.push(mcBalance)
       }

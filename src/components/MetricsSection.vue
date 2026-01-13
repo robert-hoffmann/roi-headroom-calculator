@@ -13,23 +13,27 @@ const store = useCalculatorStore()
       <StatCard
         label="Required start"
         :value="store.format.currency(store.requiredStart)"
-        :meta="`${store.format.currency(store.selected.target)} / mo, ${store.selected.years}y, ${store.selected.cagr}% CAGR`"
+        :meta="`${store.format.currency(store.selected.target)}/ mo, ${store.selected.years}y, ${store.selected.cagr}% CAGR`"
+        :tooltip="`Capital needed to sustain ${store.format.currency(store.selected.target)}/mo withdrawals for ${store.selected.years} years at ${store.selected.cagr}% CAGR`"
       />
       <StatCard
         label="CAGR needed"
         :value="store.requiredCagrText"
-        :meta="`based on ${store.format.currency(store.contribution.startCapital)} starting capital`"
+        :meta="store.requiredCagrMeta"
+        :tooltip="`The annual growth rate your starting capital would need to sustain ${store.format.currency(store.selected.target)}/mo for ${store.selected.years} years`"
       />
       <StatCard
         label="Time to target"
         :value="store.autoTimeText"
-        :meta="`with ${store.format.currency(store.contributionMonthly)} / mo contributions`"
+        :meta="`with ${store.format.currency(store.contributionMonthly)}/ mo contributions`"
+        :tooltip="`How long until your contributions grow to reach the required starting capital`"
       />
       <StatCard
         label="End balance"
         :value="store.format.currency(store.simulation.endBalance)"
         :meta="store.runwayText"
         :warning="store.simulation.endBalance < 0"
+        :tooltip="`Your projected balance at the end of the ${store.selected.years}-year withdrawal period`"
       />
     </div>
   </div>
