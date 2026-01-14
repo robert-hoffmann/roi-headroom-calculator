@@ -10,7 +10,7 @@ const tooltip = computed(() => `Switch to ${store.currency === 'EUR' ? 'USD' : '
 
 <template>
   <button
-    class="currency-toggle"
+    class="floating-button currency-toggle"
     :title="tooltip"
     @click="store.toggleCurrency()"
   >

@@ -6,10 +6,9 @@ const { startTour } = useTour()
 
 <template>
   <button
-    class="tour-trigger"
+    class="floating-button tour-trigger"
     @click="startTour"
     title="Start guided tour"
     aria-label="Start guided tour"
-  >?
-  </button>
+  >?</button>
 </template>

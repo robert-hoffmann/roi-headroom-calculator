@@ -61,14 +61,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="app">
-    <!-- GitHub ribbon -->
+  <!-- Floating controls constrained to content width -->
+  <div class="floating-controls-container">
     <GitHubRibbon />
-
-    <!-- Currency and theme toggles -->
-    <CurrencyToggle />
     <ThemeToggle />
+    <CurrencyToggle />
+    <TourTrigger />
+  </div>
 
+  <div class="app">
     <!-- Header -->
     <header class="app-header" data-animate>
       <div class="header-content">
@@ -99,8 +100,5 @@ onMounted(() => {
       This is a simplified model for exploration only. Real markets include volatility,
       taxes, fees, and sequence risk.
     </div>
-
-    <!-- Tour trigger button -->
-    <TourTrigger />
   </div>
 </template>

@@ -6,7 +6,7 @@ const { toggleTheme, isDark } = useTheme()
 
 <template>
   <button
-    class="theme-toggle"
+    class="floating-button theme-toggle"
     @click="toggleTheme"
     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
     :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
@@ -14,9 +14,6 @@ const { toggleTheme, isDark } = useTheme()
     <!-- Sun icon for dark mode (click to switch to light) -->
     <svg
       v-if="isDark"
-      class="theme-icon"
-      width="22"
-      height="22"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -37,9 +34,6 @@ const { toggleTheme, isDark } = useTheme()
     <!-- Moon icon for light mode (click to switch to dark) -->
     <svg
       v-else
-      class="theme-icon"
-      width="22"
-      height="22"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

@@ -163,7 +163,7 @@ body.loaded [data-animate] {
   .panel,
   .stat-card,
   .hero-text,
-  .theme-toggle {
+  .floating-button {
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
   }
@@ -435,44 +435,75 @@ body.loaded [data-animate] {
     @apply font-bold;
   }
 
-  /* Theme toggle button */
-  .theme-toggle {
-    @apply fixed top-7 right-7 w-[52px] h-[52px] rounded-full;
+  /* Floating button base - shared by ThemeToggle, CurrencyToggle, TourTrigger */
+  .floating-button {
+    @apply absolute right-7 w-[52px] h-[52px] rounded-full;
     @apply flex items-center justify-center cursor-pointer;
-    @apply z-[100];
     background: var(--surface-raised);
     border: 1px solid var(--border-base);
     box-shadow: var(--shadow-elevated);
     color: var(--interactive-base);
+    font-weight: 700;
+    font-size: 1.25rem;
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     @apply transition-all duration-300;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .theme-toggle:hover {
+  .floating-button:hover {
     @apply scale-110 rotate-[10deg];
-    box-shadow: var(--shadow-elevated);
     border-color: var(--interactive-base);
   }
 
-  .theme-toggle:active {
+  .floating-button:active {
     @apply scale-95;
   }
 
-  .theme-icon {
+  .floating-button svg {
+    width: 22px;
+    height: 22px;
     @apply transition-transform duration-[400ms];
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .theme-toggle:hover .theme-icon {
+  .floating-button:hover svg {
     @apply rotate-[20deg] scale-110;
+  }
+
+  /* Position-only: first button */
+  .theme-toggle {
+    top: 28px;
+  }
+
+  /* Position-only: second button (28 + 52 + 12 gap = 92) */
+  .currency-toggle {
+    top: 92px;
+  }
+
+  /* Position-only: third button (92 + 52 + 12 gap = 156) */
+  .tour-trigger {
+    top: 156px;
   }
 
   /* Footer */
   .footer-note {
     @apply text-center text-[0.85rem];
     color: var(--text-secondary);
+  }
+
+  /* Floating controls container - constrains icons to content width on large screens */
+  .floating-controls-container {
+    @apply fixed top-0 left-1/2 w-full;
+    transform: translateX(-50%);
+    max-width: 1400px;
+    height: 0;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .floating-controls-container > * {
+    pointer-events: auto;
   }
 }
 
@@ -481,8 +512,26 @@ body.loaded [data-animate] {
    ============================================ */
 
 @media (max-width: 980px) {
+  .floating-button {
+    @apply right-5 w-12 h-12;
+    font-size: 1.1rem;
+  }
+
+  .floating-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
   .theme-toggle {
-    @apply top-5 right-5 w-12 h-12;
+    top: 20px;
+  }
+
+  .currency-toggle {
+    top: 76px; /* 20 + 48 + 8 gap */
+  }
+
+  .tour-trigger {
+    top: 132px; /* 76 + 48 + 8 gap */
   }
 
   .grid.two {
@@ -496,13 +545,31 @@ body.loaded [data-animate] {
   .input-row {
     @apply grid-cols-1;
   }
-
-  .tour-trigger {
-    @apply bottom-5 right-5 px-3.5 py-2.5;
-  }
 }
 
 @media (max-width: 640px) {
+  .floating-button {
+    @apply right-4 w-10 h-10;
+    font-size: 1rem;
+  }
+
+  .floating-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .theme-toggle {
+    top: 16px;
+  }
+
+  .currency-toggle {
+    top: 60px; /* 16 + 40 + 4 gap */
+  }
+
+  .tour-trigger {
+    top: 108px; /* 60 + 40 + 8 gap */
+  }
+
   .overview .hero-metrics {
     @apply grid-cols-1;
   }
@@ -510,48 +577,30 @@ body.loaded [data-animate] {
   .app-header h1 {
     @apply text-[1.3rem];
   }
+
+  /* Consistent panel padding on mobile */
+  .panel {
+    @apply px-5 py-5;
+  }
+
+  .app-header {
+    @apply px-5 py-4;
+  }
+
+  /* Stat card padding adjustment */
+  .stat-card {
+    @apply px-4 py-4;
+  }
+
+  /* App container padding */
+  .app {
+    @apply px-4;
+  }
 }
 
 /* ============================================
    TOUR STYLES
    ============================================ */
-
-/* Tour trigger button */
-.tour-trigger {
-  @apply fixed right-7 w-[52px] h-[52px] rounded-full;
-  @apply flex items-center justify-center cursor-pointer;
-  @apply z-[99];
-  top: 156px; /* 92px + 52px currency button + 12px gap */
-  background: var(--surface-raised);
-  border: 1px solid var(--border-base);
-  box-shadow: var(--shadow-elevated);
-  color: var(--interactive-base);
-  font-weight: 700;
-  font-size: 1.25rem;
-  font-family: inherit;
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  @apply transition-all duration-300;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.tour-trigger:hover {
-  @apply scale-110 rotate-[10deg];
-  box-shadow: var(--shadow-elevated);
-  border-color: var(--interactive-base);
-}
-
-.tour-trigger:active {
-  @apply scale-95;
-}
-
-@media (max-width: 980px) {
-  .tour-trigger {
-    @apply right-5 w-12 h-12;
-    top: 132px; /* 76px + 48px currency button + 8px gap */
-    font-size: 1.1rem;
-  }
-}
 
 /* Driver.js custom styling */
 .driver-popover {
@@ -708,10 +757,9 @@ body.loaded [data-animate] {
    ============================================ */
 
 .github-ribbon {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  z-index: 90;
   width: 150px;
   height: 150px;
   overflow: hidden;
@@ -758,42 +806,3 @@ body.loaded [data-animate] {
   }
 }
 
-/* ============================================
-   CURRENCY TOGGLE
-   ============================================ */
-
-.currency-toggle {
-  @apply fixed right-7 w-[52px] h-[52px] rounded-full;
-  @apply flex items-center justify-center cursor-pointer;
-  @apply z-[100];
-  top: 92px; /* 28px + 52px theme button + 12px gap */
-  background: var(--surface-raised);
-  border: 1px solid var(--border-base);
-  box-shadow: var(--shadow-elevated);
-  color: var(--interactive-base);
-  font-weight: 700;
-  font-size: 1.25rem;
-  font-family: inherit;
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  @apply transition-all duration-300;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.currency-toggle:hover {
-  @apply scale-110;
-  box-shadow: var(--shadow-elevated);
-  border-color: var(--interactive-base);
-}
-
-.currency-toggle:active {
-  @apply scale-95;
-}
-
-@media (max-width: 980px) {
-  .currency-toggle {
-    @apply right-5 w-12 h-12;
-    top: 76px; /* 20px + 48px theme button + 8px gap */
-    font-size: 1.1rem;
-  }
-}
